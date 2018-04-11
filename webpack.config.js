@@ -22,9 +22,7 @@ module.exports = {
   },
   entry: {
     background: './background/index.js',
-    popup: './popup/index.js',
-    content: './content_scripts/index.js',
-    settings: './settings/index.js'
+    newtab: './src/newtab/index.js'
   },
   module: {
     rules: [
