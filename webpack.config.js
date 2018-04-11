@@ -83,6 +83,7 @@ module.exports = {
       filename: 'manifest.json',
       template: 'manifest.json',
       name: packageJson.name,
+      description: packageJson.description,
       version: packageJson.version,
       domain: configJson.domain,
     }),

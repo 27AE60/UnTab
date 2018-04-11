@@ -6,6 +6,7 @@ html  {
 
 a {
   text-decoration: none;
+  color: #000000;
 }
 
 a:visited {
@@ -54,6 +55,11 @@ body {
   float: left;
 }
 
+.Info {
+  margin-left: 10px;
+  float: left;
+}
+
 .Options {
   margin-right: 10px;
   float: right;
@@ -62,9 +68,10 @@ body {
 .Icon {
   width: 15px;
   height: 15px;
-  padding: 10px 10px 5px 10px;
+  padding: 11px 10px 6px 10px;
 }
 
 .Icon:hover {
   cursor: pointer;
+  color: #27AE60;
 }

@@ -5,6 +5,8 @@ import Unsplash, { toJson } from 'unsplash-js';
 
 import defaultImage from  'samagri/default_image.jpg';
 
+const defaultQuery = 'nature trees hills'
+
 const api = new Unsplash({
   applicationId: config.accessKey
 })
@@ -17,6 +19,12 @@ browser.browserAction.onClicked.addListener((e) => {
   })
 })
 
+function getQuery(dq) {
+  const query = localStorage.getItem('query')
+  if (!query) localStorage.setItem('query', dq)
+  return query || dq
+}
+
 function getDataUri(url, callback) {
   const image = new Image();
 
@@ -26,7 +34,7 @@ function getDataUri(url, callback) {
     canvas.width = this.naturalWidth; // or 'width' if you want a special/scaled size
     canvas.height = this.naturalHeight; // or 'height' if you want a special/scaled size
     canvas.getContext('2d').drawImage(this, 0, 0);
-    callback(null, canvas.toDataURL('image/png'));
+    callback(null, canvas.toDataURL('image/jpeg', 0.9));
   }
   image.onerror = function(err) {
     callback('Unable to get image')
@@ -41,15 +49,16 @@ function getDataUri(url, callback) {
 
 function fetchImageData() {
   return api.photos.getRandomPhoto({
-    height: 1080,
-    query: 'nature trees hills'
+    width: 1080,
+    query: getQuery(defaultQuery)
   }).then(toJson)
 }
 
 function saveImageData() {
   return fetchImageData().then(d => {
+    console.log(d)
     return new Promise((resolve, reject) => {
-      getDataUri(d.urls.custom, (err, val) => {
+      getDataUri(d.urls.regular, (err, val) => {
         if (err) {
           return reject(err)
         }
