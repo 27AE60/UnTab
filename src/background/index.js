@@ -29,13 +29,13 @@ function getDataUri(url, callback) {
     callback(null, canvas.toDataURL('image/png'));
   }
   image.onerror = function(err) {
-    cb(null, defaultImage)
+    callback('Unable to get image')
   }
   image.src = url
   // make sure the load event fires for cached images too
-  if ( img.complete || img.complete === undefined ) {
-    img.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
-    img.src = url;
+  if (image.complete || image.complete === undefined) {
+    image.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
+    image.src = url;
   }
 }
 
@@ -48,13 +48,21 @@ function fetchImageData() {
 
 function saveImageData() {
   return fetchImageData().then(d => {
-    getDataUri(d.urls.custom, (err, val) => {
-      if (err) {
-        return Promise.reject(err)
-      }
+    return new Promise((resolve, reject) => {
+      getDataUri(d.urls.custom, (err, val) => {
+        if (err) {
+          return reject(err)
+        }
 
-      localStorage.setItem('tabimage', val)
-      localStorage.setItem('imagedata', JSON.stringify(d))
+        try {
+          localStorage.setItem('tabimage', val)
+          localStorage.setItem('imagedata', JSON.stringify(d))
+
+          return resolve(d)
+        } catch(e) {
+          return reject(e)
+        }
+      })
     })
   })
 }
@@ -67,6 +75,8 @@ browser.alarms.onAlarm.addListener((a) => {
   if (a.name === 'fetch-unsplash-image') {
     saveImageData().catch(err => {
       console.log(err)
+      localStorage.setItem('tabimage', defaultImage)
+      localStorage.setItem('imagedata', JSON.stringify(null))
     })
   }
 })
@@ -75,6 +85,8 @@ browser.runtime.onInstalled.addListener((e) => {
   if (e.reason === 'install' || e.reason === 'update') {
     saveImageData().catch(err => {
       console.log(err)
+      localStorage.setItem('tabimage', defaultImage)
+      localStorage.setItem('imagedata', JSON.stringify(null))
     })
   }
 })
