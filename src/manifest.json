@@ -1,0 +1,46 @@
+{
+  "manifest_version": 2,
+
+  "name": "<%= chromeManifestPlugin.options.name %>",
+  "version": "<%= chromeManifestPlugin.options.version %>",
+  "description": "<%= chromeManifestPlugin.options.description %>",
+  "author": "Suyash Katiyar",
+  "homepage_url": "<%= chromeManifestPlugin.options.domain %>",
+
+  "browser_action":  {
+    "default_title": "<%= chromeManifestPlugin.options.name %>",
+    "default_popup": "popup.html",
+    "default_icon": "icons/logo_48x48.png"
+  },
+
+  "icons":  {
+    "16": "icons/logo_16x16.png",
+    "48": "icons/logo_48x48.png",
+    "128": "icons/logo_128x128.png"
+  },
+
+  "background": {
+    "scripts": ["background.js"],
+    "persistance": false
+  },
+
+  "permissions": [
+    "webRequest",
+    "webRequestBlocking",
+    "storage",
+    "activeTab",
+    "<all_urls>"
+  ],
+
+  "content_security_policy": "script-src 'self'; object-src 'self'",
+
+  "minimum_chrome_version": "35",
+
+  "content_scripts": [{
+    "matches": ["<all_urls>"],
+    "css": [],
+    "js": [ "content.js" ],
+    "run_at": "document_start",
+    "all_frames": false
+  }]
+}
