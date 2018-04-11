@@ -51,7 +51,12 @@ module.exports = {
           use: [
             { loader: 'css-loader' },
             { loader: 'sass-loader' },
-            { loader: 'postcss-loader' }
+            {
+              loader: 'postcss-loader',
+              options: {
+                postcss: [ autoprefixer({ browsers: ['last 2 versions'] }) ]
+              }
+            }
           ]
         }),
       },
@@ -61,7 +66,12 @@ module.exports = {
           fallback: 'style-loader',
           use: [
             { loader: 'css-loader' },
-            { loader: 'postcss-loader' }
+            {
+              loader: 'postcss-loader',
+              options: {
+                postcss: [ autoprefixer({ browsers: ['last 2 versions'] }) ]
+              }
+            }
           ]
         })
       },
@@ -69,11 +79,6 @@ module.exports = {
     ]
   },
   plugins: [
-    new webpack.LoaderOptionsPlugin({
-      options: {
-        postcss: [ autoprefixer({ browsers: ['last 2 versions'] }) ]
-      }
-    }),
     new ChromeManifestPlugin({
       filename: 'manifest.json',
       template: 'manifest.json',

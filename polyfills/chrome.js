@@ -167,5 +167,15 @@ module.exports = {
     handlerBehaviorChanged(fn) {
       chrome.webRequest.handlerBehaviorChanged(fn)
     }
+  },
+  alarms: {
+    create() {
+      chrome.alarms.create.apply(this, arguments)
+    },
+    onAlarm: {
+      addListener(fn) {
+        chrome.alarms.onAlarm.addListener(fn)
+      }
+    }
   }
 }
