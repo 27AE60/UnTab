@@ -22,7 +22,7 @@ module.exports = {
   },
   entry: {
     background: './background/index.js',
-    newtab: './src/newtab/index.js'
+    newtab: './newtab/index.js'
   },
   module: {
     rules: [

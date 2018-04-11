@@ -4,7 +4,6 @@ function interceptor(fn, args) {
   return new Promise((resolve, reject) => {
     args = Array.prototype.slice.call(args)
       .concat([function() {
-        console.log(arguments)
         if (chrome.runtime.lastError) {
           reject(chrome.runtime.lastError);
         } else if (arguments.length === 1) {
@@ -13,7 +12,6 @@ function interceptor(fn, args) {
           resolve(arguments);
         }
       }]);
-        console.log(args)
     fn.apply(this, args)
   })
 }
