@@ -125,6 +125,8 @@ browser.runtime.onMessage.addListener((message, sender) => {
         imgData = JSON.parse(picData)
       } catch(e) {
         console.log(e)
+      }
+      if (!imgData) {
         return resolve({error: false, data: defaultData})
       }
 
@@ -160,6 +162,23 @@ browser.runtime.onMessage.addListener((message, sender) => {
         resolve({error: false, data: defaultData})
       })
     } else if (message.action === 'change-query') {
+      if (typeof message.query === 'string') {
+        localStorage.setItem('query', message.query)
+
+        return getImageData().then((d) => {
+          resolve({error: false, data: {
+            imageUrl: 'url(' + d.image + ')',
+            imageLink: d.data.links.html + '?utm_source=UnTab&utm_medium=referral',
+            link: d.data.user.links.html + '?utm_source=UnTab&utm_medium=referral',
+            name: '@' + d.data.user.username
+          }})
+        }).catch(err => {
+          console.log(err)
+          resolve({error: false, data: defaultData})
+        })
+      } else {
+        reject({error: true, message: 'invalid query string'})
+      }
     } else {
       reject({error: true, message: 'invalid action'})
     }

@@ -8,6 +8,10 @@ const photographer = document.getElementById('photographer')
 const imageInfo = document.getElementById('option-info')
 const optFilter = document.getElementById('option-filter')
 const optRefresh = document.getElementById('option-refresh')
+const queryBox = document.getElementById('query-box')
+const queryInput = document.getElementById('query-input')
+const querySave = document.getElementById('query-save')
+const closeQueryBox = document.getElementById('close-query-box')
 
 function setWallpaper(data) {
   mainBody.style.backgroundImage = data.imageUrl
@@ -17,6 +21,28 @@ function setWallpaper(data) {
 }
 
 optFilter.onclick = (e) => {
+  const query = localStorage.getItem('query')
+  queryInput.value = query
+  queryBox.style.visibility = 'visible'
+  querySave.onclick = (e) => {
+    const newQuery = queryInput.value
+
+    queryBox.style.visibility = 'hidden'
+    querySave.onclick = null
+
+    browser.runtime.sendMessage({
+      action: 'change-query',
+      query: newQuery
+    }).then((res) => {
+      if (res.error) console.log(res)
+      else setWallpaper(res.data)
+    })
+  }
+}
+
+closeQueryBox.onclick = (e) => {
+  queryBox.style.visibility = 'hidden'
+  querySave.onclick = null
 }
 
 optRefresh.onclick = (e) => {
