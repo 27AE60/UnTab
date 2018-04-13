@@ -1,3 +1,5 @@
+import browser from 'browser'
+
 import 'samagri/newtab.pug'
 import 'samagri/newtab.css'
 
@@ -9,43 +11,26 @@ const optRefresh = document.getElementById('option-refresh')
 
 function setWallpaper(data) {
   mainBody.style.backgroundImage = data.imageUrl
+  imageInfo.href = data.imageLink
   photographer.innerText = data.name
   photographer.href = data.link
-  imageInfo.href = data.imageLink
 }
 
-const tabImage = localStorage.getItem('tabimage')
-const picData = localStorage.getItem('imagedata')
-
-let imgData = null;
-try {
-  imgData = JSON.parse(picData)
-} catch(e) {
-  console.log(e)
+optFilter.onclick = (e) => {
 }
 
-if (!imgData) {
-  imgData = {
-    user: {
-      username: 'skatiyar',
-      links: {
-        html: 'https://unsplash.com/@skatiyar'
-      }
-    },
-    links: {
-      html: 'https://unsplash.com/photos/QTVbPb6GwYo'
-    }
-  }
+optRefresh.onclick = (e) => {
+  browser.runtime.sendMessage({
+    action: 'refresh-image'
+  }).then((res) => {
+    if (res.error) console.log(res)
+    else setWallpaper(res.data)
+  })
 }
 
-const imageUrl = 'url(' + tabImage + ')'
-const imageLink = imgData.links.html + '?utm_source=UnTab&utm_medium=referral'
-const imagePhotographer = '@' + imgData.user.username;
-const photographerLink = imgData.user.links.html + '?utm_source=UnTab&utm_medium=referral'
-
-setWallpaper({
-  imageUrl: imageUrl,
-  imageLink: imageLink,
-  name: imagePhotographer,
-  link: photographerLink
+browser.runtime.sendMessage({
+  action: 'fetch-image'
+}).then((res) => {
+  if (res.error) console.log(res)
+  else setWallpaper(res.data)
 })

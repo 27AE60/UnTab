@@ -75,6 +75,7 @@
     "webpack": "^3.11.0"
   },
   "dependencies": {
-    "unsplash-js": "^4.8.0"
+    "unsplash-js": "^4.8.0",
+    "whatwg-fetch": "^2.0.4"
   }
 }

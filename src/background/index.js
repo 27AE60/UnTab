@@ -1,11 +1,20 @@
-import browser from 'browser';
-import config from 'config';
+import browser from 'browser'
+import config from 'config'
 
-import Unsplash, { toJson } from 'unsplash-js';
+import 'whatwg-fetch'
+import Unsplash, { toJson } from 'unsplash-js'
 
-import defaultImage from  'samagri/default_image.jpg';
+import defaultImage from  'samagri/default_image.jpg'
 
+const refreshInterval = 60 * 5
+const partSize = 4
 const defaultQuery = 'nature trees hills'
+const defaultData = {
+  imageUrl: 'url(' + defaultImage + ')',
+  imageLink: 'https://unsplash.com/photos/QTVbPb6GwYo?utm_source=UnTab&utm_medium=referral',
+  link: 'https://unsplash.com/@skatiyar?utm_source=UnTab&utm_medium=referral',
+  name: '@skatiyar'
+}
 
 const api = new Unsplash({
   applicationId: config.accessKey
@@ -19,12 +28,6 @@ browser.browserAction.onClicked.addListener((e) => {
   })
 })
 
-function getQuery(dq) {
-  const query = localStorage.getItem('query')
-  if (!query) localStorage.setItem('query', dq)
-  return query || dq
-}
-
 function getDataUri(url, callback) {
   const image = new Image();
 
@@ -34,7 +37,7 @@ function getDataUri(url, callback) {
     canvas.width = this.naturalWidth; // or 'width' if you want a special/scaled size
     canvas.height = this.naturalHeight; // or 'height' if you want a special/scaled size
     canvas.getContext('2d').drawImage(this, 0, 0);
-    callback(null, canvas.toDataURL('image/jpeg', 0.9));
+    callback(null, canvas.toDataURL('image/png'));
   }
   image.onerror = function(err) {
     callback('Unable to get image')
@@ -47,55 +50,118 @@ function getDataUri(url, callback) {
   }
 }
 
-function fetchImageData() {
-  return api.photos.getRandomPhoto({
-    width: 1080,
-    query: getQuery(defaultQuery)
-  }).then(toJson)
+function getOrientation() {
+  const ratio = window.screen.width / window.screen.height
+  if (ratio > 1.2) return 'landscape'
+  else if (ratio < 0.8) return 'portrait'
+  else return 'squarish'
 }
 
-function saveImageData() {
-  return fetchImageData().then(d => {
-    console.log(d)
+function getQuery() {
+  return localStorage.getItem('query')
+}
+
+function getRequestParams() {
+  const query = getQuery()
+  const params = {orientation: getOrientation()}
+  if (query) params.query = query
+  return params
+}
+
+function getImageData() {
+  return api.photos.getRandomPhoto(
+    getRequestParams()
+  ).then(toJson).then(d => {
     return new Promise((resolve, reject) => {
       getDataUri(d.urls.regular, (err, val) => {
-        if (err) {
-          return reject(err)
-        }
-
-        try {
-          localStorage.setItem('tabimage', val)
-          localStorage.setItem('imagedata', JSON.stringify(d))
-
-          return resolve(d)
-        } catch(e) {
-          return reject(e)
-        }
+        if (err) return reject(err)
+        else return resolve({data: d, image: val})
       })
     })
+  }).then(d => {
+    // save the pic information
+    localStorage.setItem('imagedata', JSON.stringify(d.data))
+    // save last fetch time
+    localStorage.setItem('lastfetch', Date.now().toString())
+
+    // save image after spliting it into 4 parts to prevent localStorage size exception
+    const regex = new RegExp('.{1,' + Math.ceil(d.image.length / partSize) + '}', 'g');
+    const chunks = d.image.match(regex)
+    chunks.forEach((e, idx) => {
+      localStorage.setItem('image-' + idx, e)
+    })
+
+    return Promise.resolve(d)
   })
 }
 
 browser.alarms.create('fetch-unsplash-image', {
-  periodInMinutes: 60 * 5 // refresh every five hours
+  periodInMinutes: refreshInterval // refresh every five hours
 })
 
 browser.alarms.onAlarm.addListener((a) => {
   if (a.name === 'fetch-unsplash-image') {
-    saveImageData().catch(err => {
+    getImageData().catch(err => {
       console.log(err)
-      localStorage.setItem('tabimage', defaultImage)
-      localStorage.setItem('imagedata', JSON.stringify(null))
     })
   }
 })
 
 browser.runtime.onInstalled.addListener((e) => {
   if (e.reason === 'install' || e.reason === 'update') {
-    saveImageData().catch(err => {
+    if (e.reason === 'install') localStorage.setItem('query', defaultQuery)
+    getImageData().catch(err => {
       console.log(err)
-      localStorage.setItem('tabimage', defaultImage)
-      localStorage.setItem('imagedata', JSON.stringify(null))
     })
   }
+})
+
+browser.runtime.onMessage.addListener((message, sender) => {
+  return new Promise((resolve, reject) => {
+    if (message.action === 'fetch-image') {
+      const picData = localStorage.getItem('imagedata')
+      let imgData = null;
+      try {
+        imgData = JSON.parse(picData)
+      } catch(e) {
+        console.log(e)
+        return resolve({error: false, data: defaultData})
+      }
+
+      let imageUrl = ''
+      for (let i = 0; i < partSize; i++) {
+        imageUrl += localStorage.getItem('image-' + i)
+      }
+
+      resolve({error: false, data: {
+        imageUrl: 'url(' + imageUrl + ')',
+        imageLink: imgData.links.html + '?utm_source=UnTab&utm_medium=referral',
+        link: imgData.user.links.html + '?utm_source=UnTab&utm_medium=referral',
+        name: '@' + imgData.user.username
+      }})
+
+      // check if last load was more than 5 hours ago
+      const lastFetch = parseInt(localStorage.getItem('lastfetch'))
+      if (isNaN(lastFetch) || Date.now() > lastFetch + (refreshInterval * 60 * 1000)) {
+        getImageData().catch(err => {
+          console.log(err)
+        })
+      }
+    } else if (message.action === 'refresh-image') {
+      return getImageData().then((d) => {
+        resolve({error: false, data: {
+          imageUrl: 'url(' + d.image + ')',
+          imageLink: d.data.links.html + '?utm_source=UnTab&utm_medium=referral',
+          link: d.data.user.links.html + '?utm_source=UnTab&utm_medium=referral',
+          name: '@' + d.data.user.username
+        }})
+      }).catch(err => {
+        console.log(err)
+        resolve({error: false, data: defaultData})
+      })
+    } else if (message.action === 'change-query') {
+    } else {
+      reject({error: true, message: 'invalid action'})
+    }
+  })
 })
