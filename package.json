@@ -1,6 +1,6 @@
 {
   "name": "UnTab",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Minimal newtab with amazing wallpapers form Unsplash!",
   "main": "src/index.js",
   "author": "Suyash Katiyar",
