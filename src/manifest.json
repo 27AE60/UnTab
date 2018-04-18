@@ -24,7 +24,8 @@
   },
 
   "permissions": [
-    "alarms"
+    "alarms",
+    "https://*.unsplash.com/*"
   ],
 
   "offline_enabled": true,

@@ -26,6 +26,9 @@ module.exports = {
     },
     getManifest() {
       return browser.runtime.getManifest()
+    },
+    setUninstallURL() {
+      return browser.runtime.setUninstallURL.apply(null, arguments)
     }
   },
   tabs: {
@@ -96,6 +99,21 @@ module.exports = {
     },
     setBadgeBackgroundColor() {
       browser.browserAction.setBadgeBackgroundColor.apply(null, arguments)
+    },
+    onClicked: {
+      addListener(fn) {
+        chrome.browserAction.onClicked.addListener(fn)
+      }
+    }
+  },
+  alarms: {
+    create() {
+      browser.alarms.create.apply(null, arguments)
+    },
+    onAlarm: {
+      addListener(fn) {
+        browser.alarms.onAlarm.addListener(fn)
+      }
     }
   }
 }
