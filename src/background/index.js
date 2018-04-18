@@ -13,7 +13,7 @@ const defaultData = {
   imageUrl: 'url(' + defaultImage + ')',
   imageLink: 'https://unsplash.com/photos/QTVbPb6GwYo?utm_source=UnTab&utm_medium=referral',
   link: 'https://unsplash.com/@skatiyar?utm_source=UnTab&utm_medium=referral',
-  name: '@skatiyar'
+  name: 'Suyash Katiyar'
 }
 
 const api = new Unsplash({
@@ -139,7 +139,7 @@ browser.runtime.onMessage.addListener((message, sender) => {
         imageUrl: 'url(' + imageUrl + ')',
         imageLink: imgData.links.html + '?utm_source=UnTab&utm_medium=referral',
         link: imgData.user.links.html + '?utm_source=UnTab&utm_medium=referral',
-        name: '@' + imgData.user.username
+        name: imgData.user.name
       }})
 
       // check if last load was more than 5 hours ago
@@ -155,7 +155,7 @@ browser.runtime.onMessage.addListener((message, sender) => {
           imageUrl: 'url(' + d.image + ')',
           imageLink: d.data.links.html + '?utm_source=UnTab&utm_medium=referral',
           link: d.data.user.links.html + '?utm_source=UnTab&utm_medium=referral',
-          name: '@' + d.data.user.username
+          name: d.data.user.name
         }})
       }).catch(err => {
         console.log(err)
@@ -170,7 +170,7 @@ browser.runtime.onMessage.addListener((message, sender) => {
             imageUrl: 'url(' + d.image + ')',
             imageLink: d.data.links.html + '?utm_source=UnTab&utm_medium=referral',
             link: d.data.user.links.html + '?utm_source=UnTab&utm_medium=referral',
-            name: '@' + d.data.user.username
+            name: d.data.user.name
           }})
         }).catch(err => {
           console.log(err)
