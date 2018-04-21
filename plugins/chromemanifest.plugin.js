@@ -25,7 +25,7 @@ ChromeManifestPlugin.prototype.apply = function(compiler) {
       delete manifestJson['applications'];
     }
 
-    var icons = [manifestJson.icons['16'], manifestJson.icons['48'], manifestJson.icons['128']];
+    var icons = [manifestJson.icons['16'], manifestJson.icons['32'], manifestJson.icons['48'], manifestJson.icons['128']];
     icons.forEach(function(icon) {
       mkdirp.sync(path.dirname(path.join(stats.compilation.compiler.outputPath, icon)));
       fs.createReadStream(path.join(stats.compilation.compiler.context, icon))
