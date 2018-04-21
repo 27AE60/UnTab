@@ -7,7 +7,7 @@ const autoprefixer = require('autoprefixer')
 
 const ChromeManifestPlugin = require('./plugins/chromemanifest.plugin.js')
 const packageJson = require('./package.json')
-const configJson = require('./config/development.json')
+const configJson = require('./config/production.json')
 
 const TARGET_BROWSER = process.env.TARGET_BROWSER || 'chrome'
 
@@ -17,7 +17,7 @@ let extractHtml = new ExtractTextPlugin('[name].html')
 module.exports = {
   context: path.join(__dirname, 'src'),
   output: {
-    path: path.join(__dirname, 'build/dev', TARGET_BROWSER),
+    path: path.join(__dirname, 'build/prod', TARGET_BROWSER),
     filename: '[name].js'
   },
   entry: {
@@ -79,9 +79,21 @@ module.exports = {
     ]
   },
   plugins: [
+    new webpack.DefinePlugin({
+      'process.env': {
+        'NODE_ENV': '"production"'
+      }
+    }),
+    new webpack.optimize.UglifyJsPlugin({
+      minimize: true,
+      compress: {
+        warnings: false
+      },
+      screw_ie8: true
+    }),
     new ChromeManifestPlugin({
-      filename: 'manifest.json',
       template: 'manifest.json',
+      filename: 'manifest.json',
       name: packageJson.name,
       description: packageJson.description,
       version: packageJson.version,
@@ -93,7 +105,7 @@ module.exports = {
   ],
   resolve: {
     alias: {
-      config: path.join(__dirname, 'config/development'),
+      config: path.join(__dirname, 'config/production'),
       browser: path.join(__dirname, 'polyfills', TARGET_BROWSER),
       samagri: path.join(__dirname, 'src/samagri')
     },
