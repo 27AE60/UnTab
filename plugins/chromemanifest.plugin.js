@@ -16,13 +16,22 @@ ChromeManifestPlugin.prototype.apply = function(compiler) {
     var manifestTpl = fs.readFileSync(path.join(stats.compilation.compiler.context, self.options.template));
     var manifest = lodash.template(manifestTpl)({chromeManifestPlugin: {options: self.options}});
     var manifestJson = JSON.parse(manifest);
+
+    if (self.options.browser === 'firefox') {
+      delete manifestJson['offline_enabled'];
+      delete manifestJson['background']['persistance'];
+      delete manifestJson['minimum_chrome_version'];
+    } else if (self.options.browser === 'chrome') {
+      delete manifestJson['applications'];
+    }
+
     var icons = [manifestJson.icons['16'], manifestJson.icons['48'], manifestJson.icons['128']];
     icons.forEach(function(icon) {
       mkdirp.sync(path.dirname(path.join(stats.compilation.compiler.outputPath, icon)));
       fs.createReadStream(path.join(stats.compilation.compiler.context, icon))
         .pipe(fs.createWriteStream(path.join(stats.compilation.compiler.outputPath, icon)));
     });
-    fs.writeFileSync(path.join(stats.compilation.compiler.outputPath, self.options.filename), manifest);
+    fs.writeFileSync(path.join(stats.compilation.compiler.outputPath, self.options.filename), JSON.stringify(manifestJson));
   });
 };
 

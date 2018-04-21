@@ -21,9 +21,7 @@ const api = new Unsplash({
 })
 
 browser.browserAction.onClicked.addListener((e) => {
-  browser.tabs.create({
-    url: 'about:newtab'
-  }).catch(err => {
+  browser.tabs.create({}).catch(err => {
     console.log(err)
   })
 })
