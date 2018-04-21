@@ -22,7 +22,7 @@ module.exports = {
       }
     },
     sendMessage() {
-      return browser.runtime.sendMessage.apply(null, arguments)
+      return browser.runtime.sendMessage.apply(this, arguments)
     },
     getManifest() {
       return browser.runtime.getManifest()
@@ -39,7 +39,7 @@ module.exports = {
       return browser.tabs.query.apply(null, arguments)
     },
     create() {
-      browser.tabs.create.apply(null, arguments)
+      return browser.tabs.create.apply(this, arguments)
     },
     insertCSS() {
       return browser.tabs.insertCSS.apply(null, arguments)
