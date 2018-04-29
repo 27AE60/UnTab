@@ -92,7 +92,7 @@ body {
 
 .BoxFooter {
   height: 30px;
-  margin-bottom: 5px;
+  padding-bottom: 5px;
 }
 
 .BoxFooter button {
@@ -103,8 +103,13 @@ body {
   border-radius: 3px;
   border: 0;
   height: fit-content;
-  padding: 5px;
+  padding: 5px 10px;
   margin-right: 10px;
+  background-color: transparent;
+}
+
+.BoxFooter button:hover {
+  background-color: #ecf0f1;
 }
 
 #mainbody {
