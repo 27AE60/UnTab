@@ -3,7 +3,13 @@ Minimal newtab with amazing wallpapers form Unsplash!
 
 ## Screen Shots
 
+Newtab with images from [Unsplash.com](https://unsplash.com)
 
+![Basic screenshot](https://raw.githubusercontent.com/27AE60/UnTab/master/screenshots/Screen%20Shot%201.png)
+
+Ability to filter images on basis of keywords.
+
+![Basic screenshot with filter query](https://raw.githubusercontent.com/27AE60/UnTab/master/screenshots/Screen%20Shot%202.png)
 
 ## Building
 
