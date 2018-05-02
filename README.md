@@ -1,6 +1,10 @@
 # UnTab
 Minimal newtab with amazing wallpapers form Unsplash!
 
+## Install
+
+[![Mozilla Add-on](https://img.shields.io/amo/v/untab.svg)](https://addons.mozilla.org/en-US/firefox/addon/untab)
+
 ## Screen Shots
 
 Newtab with images from [Unsplash.com](https://unsplash.com)
