@@ -5,7 +5,12 @@ module.exports = {
     onMessage: {
       addListener(fn) {
         browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
-          return fn(message, sender)
+          fn(message, sender).then(function(val) {
+            sendResponse(val)
+          }, function(val) {
+            sendResponse(val)
+          })
+          return true
         })
       }
     },
